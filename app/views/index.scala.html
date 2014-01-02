@@ -1,0 +1,45 @@
+@(twilioForm: Form[TwilioCredentials])(implicit flash: Flash)
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@main("Welcome to Twilio sample") {
+
+
+    <h1>Welcome to Twilio demo</h1>
+    <p>To proceed provide your Twilio key and secret. They will be stored in the user session to use the samples in the next page.</p>
+
+    <div class="row">
+       <div class="col-xs-12">
+
+           @helper.form(action = routes.Application.getCredentials) {
+
+               <fieldset>
+                   <legend>Twilio Credentials</legend>
+
+                   @inputText(
+                   twilioForm("sid"),
+                   '_label -> "SID"
+                   )
+
+                   @inputText(
+                   twilioForm("token"),
+                   '_label -> "Auth Token"
+                   )
+
+                   @inputText(
+                   twilioForm("appSID"),
+                   '_label -> "App SID"
+                   )
+               </fieldset>
+
+
+               <div class="actions">
+                   <input type="submit" class="btn primary" value="Go">
+               </div>
+           }
+
+       </div>
+    </div>
+
+}

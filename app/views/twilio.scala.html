@@ -1,0 +1,107 @@
+@(sid: String, smsForm: Form[TwSMS], callToken: String, callsReceived: List[String])(implicit flash: Flash)
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@panel(title: String)(body: Html) = {
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">@title</h3>
+        </div>
+        <div class="panel-body">
+            @body
+        </div>
+    </div>
+}
+
+@jsSnippet = {
+    <script type="text/javascript" src="//static.twilio.com/libs/twiliojs/1.1/twilio.min.js"></script>
+    <script type="text/javascript">
+
+    /* Create the Client with a Capability Token */
+    Twilio.Device.setup("@callToken", {debug: true});
+
+    /* Let us know when the client is ready. */
+    Twilio.Device.ready(function (device) {
+        $("#log").text("Ready");
+    });
+
+    /* Report any errors on the screen */
+    Twilio.Device.error(function (error) {
+        $("#log").text("Error: " + error.message);
+    });
+
+    /* Log a message when a call disconnects. */
+    Twilio.Device.disconnect(function (conn) {
+        $("#log").text("Call ended");
+    });
+
+    Twilio.Device.connect(function (conn) {
+        $("#log").text("Successfully established call");
+    });
+
+    /* Connect to Twilio when we call this function. */
+    function call() {
+        // get the phone number to connect the call to
+        params = {"To": $("#callTo").val()};
+        Twilio.Device.connect(params);
+    }
+
+    /* A function to end a connection to Twilio. */
+    function hangup() {
+        Twilio.Device.disconnectAll();
+    }
+    </script>
+}
+
+@main("Welcome to Twilio sample", jsSnippet) {
+
+<h1>Choose your sample</h1>
+<p> Using Twilio <b>SID</b> @sid</p>
+<p>Select the Twilio functionality to trigger.</p>
+
+<div class="row">
+    <div class="col-xs-12">
+    @panel("Send SMS via Twilio") {
+        @helper.form(action = routes.Application.sendSMS) {
+
+            @inputText(
+                smsForm("to"),
+                '_label -> "To",
+                '_placeholder -> "Mobile number e.g.: +447700767584"
+            )
+
+            @inputText(
+                smsForm("msg"),
+                '_label -> "Message",
+                '_placeholder -> "The sms to send"
+            )
+
+            <input type="submit" class="btn primary" value="Send SMS">
+        }
+    }
+
+    @panel("Call a number from browser") {
+        <p>This requires setting a tunnel for Twilio to access the local server, see https://ngrok.com/</p>
+        <p>The tunnel must point to &lt;public_url&gt;/call-config as a GET request</p>
+        <input type="text" id="callTo" name="callTo" value="" placeholder="Mobile number e.g.: +447700767584" >
+        <br/>
+        <input type="button" onclick="call();" value="Call"> <input type="button" onclick="hangup();" value="Hang Up">
+        <div id="log">Loading pigeons...</div>
+
+    }
+
+    @panel("Recordings of calls received") {
+        <p>List of recordings stored as MP3 by Twilio after calls above finish</p>
+        <br/>
+        <ul>
+        @callsReceived.map { url =>
+           <li><a href="@url">@url</a></li>
+        }
+        </ul>
+    }
+
+    </div>
+</div>
+
+}

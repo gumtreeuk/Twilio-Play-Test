@@ -1,0 +1,17 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET         /                      controllers.Application.index
+GET         /call-config           controllers.Application.serveCallConfig
+GET         /call-done             controllers.Application.callDone
+
+POST        /credentials           controllers.Application.getCredentials
+GET         /twilio-samples        controllers.Application.testTwilio
+
+POST        /send-sms              controllers.Application.sendSMS
+
+
+# Map static resources from the /public folder to the /assets URL path
+GET         /assets/*file          controllers.Assets.at(path="/public", file)
