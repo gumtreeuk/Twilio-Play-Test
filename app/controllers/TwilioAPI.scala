@@ -22,11 +22,10 @@ object TwilioAPI {
 
     val params= Map(("Body", msg), ("To", to), ("From", PHONE_FROM))
 
-    //val messageFactory: SmsFactory = client.getAccount.getSmsFactory
-    //val message: Sms = messageFactory.create(params)
+    val messageFactory: SmsFactory = client.getAccount.getSmsFactory
+    val message: Sms = messageFactory.create(params)
 
-    //message.getSid
-    3
+    message.getSid
   }
 
   def generateCallToken(sid: String, token: String, appSID: String) = Try {

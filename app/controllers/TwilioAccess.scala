@@ -30,14 +30,14 @@ trait TwilioAccess {
   private def credentialsPresent[A](onUnauthorized: RequestHeader => SimpleResult)(action: (String, String, String) => EssentialAction): EssentialAction = {
     EssentialAction {
       request =>
-        val sid = request.session.get(Application.SID)
-        val token = request.session.get(Application.TOKEN)
-        val appSID = request.session.get(Application.APPSID)
+        val mySid = sid(request)
+        val myToken = auth(request)
+        val myAppSID = appSID(request)
 
-        if (sid.isEmpty || token.isEmpty || appSID.isEmpty)
+        if (mySid.isEmpty || myToken.isEmpty || myAppSID.isEmpty)
           Done(onUnauthorized(request), Input.Empty)
         else
-          action(sid.get, token.get, appSID.get)(request)
+          action(mySid.get, myToken.get, myAppSID.get)(request)
     }
   }
 }
